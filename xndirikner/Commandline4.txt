@@ -1,0 +1,48 @@
+// Հրամանային տողով փոխանցվում է սիմվոլային տող։ Հաշվել և արտածել փոքրատառերի քանակը։
+
+#include <iostream>
+#include <tchar.h>
+#include <windows.h>
+#include <stdio.h>
+
+using namespace std;
+
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		error_code,
+		MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT),
+		(LPTSTR)&buffer,
+		0, NULL);
+
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+
+int _tmain(int argc,TCHAR* argv[])
+{
+	
+	if (argc != 2) cout << "error in arguments\n";
+	else
+	{
+		cout << argc << endl;
+		wcout << argv[0] << endl << argv[1] << endl;
+	
+	int size, count = 0;
+	
+	size = _tcslen(argv[1]);
+	
+	for (int i = 0; i < size; i++)
+		if (argv[1][i] >= 'a' && argv[1][i] <= 'z') count++;
+	cout << "count = " << count << endl;
+	}
+	return 0;
+}
+
+

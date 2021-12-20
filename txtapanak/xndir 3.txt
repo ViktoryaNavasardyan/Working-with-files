@@ -1,0 +1,114 @@
+#include <iostream>
+#include <Windows.h>
+#include <tchar.h>
+
+using namespace std;
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, error_code, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), (LPTSTR)&buffer, 0, NULL);
+
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+int _tmain(int argc, TCHAR* argv[])
+{
+	TCHAR DirName[100];
+	WIN32_FIND_DATA a,b;
+	HANDLE f;
+	SYSTEMTIME temp;
+
+	if (argc != 2) cout << "error in arguments\n";
+	else
+	{
+		if (!GetCurrentDirectory(100, DirName)) print_error_message();
+		else
+			wcout << "current directory is:" << DirName << endl;
+
+		if (!SetCurrentDirectory(argv[1])) print_error_message();
+		else
+		{
+			GetCurrentDirectory(100, DirName);
+			wcout << "new current directory is:" << DirName << endl;
+
+			f = FindFirstFile(TEXT("*.*"), &a);
+			if (f == INVALID_HANDLE_VALUE) print_error_message();
+			else
+			{
+				wcout << "filename is:" << a.cFileName << endl;
+				cout << "size of file = " << a.nFileSizeHigh << a.nFileSizeLow << endl;
+				FileTimeToSystemTime(&a.ftLastWriteTime, &temp);
+				cout << "last write time of file is: " << temp.wDay << "." << temp.wMonth << "." << temp.wYear << endl;
+
+				if (a.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+					cout << "directory\n" << endl;
+
+				FindNextFile(f, &a);
+				b = a;
+				{
+					cout << endl;
+					wcout << "filename is:" << a.cFileName << endl;
+					cout << "size of file = " << a.nFileSizeHigh << a.nFileSizeLow << endl;
+					FileTimeToSystemTime(&a.ftLastWriteTime, &temp);
+					cout << "last write time of file is: " << temp.wDay << "." << temp.wMonth << "." << temp.wYear << endl;
+
+					if (a.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						cout << "directory\n" << endl;
+				}
+
+				while (FindNextFile(f, &a))
+				{
+					cout << endl;
+					wcout << "filename is:" << a.cFileName << endl;
+					cout << "size of file = " << a.nFileSizeHigh << a.nFileSizeLow << endl;
+					FileTimeToSystemTime(&a.ftLastWriteTime, &temp);
+					cout << "last write time of file is: " << temp.wDay << "." << temp.wMonth << "." << temp.wYear << endl;
+
+					if (a.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						cout << "directory\n" << endl;
+				}
+
+				FindClose(f);
+				
+				SetCurrentDirectory(b.cFileName);
+
+				GetCurrentDirectory(100, DirName);
+				wcout << "new current directory is:" << DirName << endl;
+
+				f = FindFirstFile(TEXT("*.*"), &a);
+				if (f == INVALID_HANDLE_VALUE) print_error_message();
+				else
+				{
+					wcout << "filename is:" << a.cFileName << endl;
+					cout << "size of file = " << a.nFileSizeHigh << a.nFileSizeLow << endl;
+					FileTimeToSystemTime(&a.ftLastWriteTime, &temp);
+					cout << "last write time of file is: " << temp.wDay << "." << temp.wMonth << "." << temp.wYear << endl;
+
+					if (a.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+						cout << "directory\n" << endl;
+
+					while (FindNextFile(f, &a))
+					{
+						cout << endl;
+						wcout << "filename is:" << a.cFileName << endl;
+						cout << "size of file = " << a.nFileSizeHigh << a.nFileSizeLow << endl;
+						FileTimeToSystemTime(&a.ftLastWriteTime, &temp);
+						cout << "last write time of file is: " << temp.wDay << "." << temp.wMonth << "." << temp.wYear << endl;
+
+						if (a.dwFileAttributes == FILE_ATTRIBUTE_DIRECTORY)
+							cout << "directory\n" << endl;
+					}
+
+					FindClose(f);
+				}
+
+
+			}
+
+		}
+	}
+	return 0;
+}

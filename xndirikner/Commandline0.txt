@@ -1,0 +1,20 @@
+// Պրոեկտին որպես արգումենտ փոխանցվում են 2 տող։ Արտածել հրամանային տողի արգումենտները։
+// Project->...Properties->Debugging-ում Command Arguments-ում գրվում են արգումենտները։ 
+// Գրում ենք "hello" "world" (չակերտներով, պրոբելով և առանց ստորակետի)։
+
+#include<iostream>
+#include<tchar.h>
+
+using namespace std;
+
+int _tmain(int argc, TCHAR* argv[])
+{
+	if (argc != 3)	cout << "Error in argc"<<endl;
+	else
+	{
+		wcout << argv[0] << endl;
+		wcout << argv[1] <<" "<<argv[2] << endl;
+		
+	}
+	return 0;
+}

@@ -1,0 +1,39 @@
+#include <iostream>
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+
+using namespace std;
+
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, error_code, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), (LPTSTR)&buffer, 0, NULL);
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+int _tmain(int argc, TCHAR* argv[])
+{
+	if (argc != 4) cout << "error in arguments\n";
+	else
+	{
+		TCHAR dirname[100];
+		if (!GetCurrentDirectory(100, dirname)) print_error_message();
+		else 
+			wcout << "current directory is: " << dirname << endl;
+		if (!SetCurrentDirectory(argv[1])) print_error_message();
+		else
+		{
+			GetCurrentDirectory(100, dirname);
+			wcout << "new current directory is: " << dirname << endl;
+		}
+		if(!CreateDirectory(argv[2], NULL)) print_error_message();
+
+		if (!RemoveDirectory(argv[3])) print_error_message();
+
+	}
+	return 0;
+}

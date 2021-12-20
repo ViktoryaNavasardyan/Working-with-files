@@ -1,0 +1,39 @@
+#include <iostream>
+#include <tchar.h>
+#include <windows.h>
+
+using namespace std;
+
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, error_code, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), (LPTSTR)&buffer, 0, NULL);
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+
+int _tmain()
+{
+	TCHAR fname1[100], fname2[100];
+	HANDLE h;
+	cout << "enter fname1: ";
+	wcin.getline(fname1, 100);
+	cout << "\n enter fname2: ";
+	wcin.getline(fname2, 100);
+
+	h = CreateFile(fname1, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (h == INVALID_HANDLE_VALUE) print_error_message();
+	else
+	{
+		char a[10]; unsigned long z;
+		for (int i = 0; i < 10; i++) cin >> a[i];
+		WriteFile(h, a, 10, &z, NULL);
+		CloseHandle(h);
+		CopyFile(fname1, fname2, FALSE);
+	}
+
+	return 0;
+}

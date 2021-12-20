@@ -1,0 +1,54 @@
+//Հրամանային տողով փոխանցել 2 սիմվոլային տող։ Ստանալ և արտածել նրանց միակցում տողը, որտեղ  
+// սկզբում կլինի 2 տողերից երկարը։
+
+#define _CRT_SECURE_NO_WARNINGS 	// որ օգտվենք _tcscpy և _tcscat ֆունկցիաներից։
+
+#include <iostream>
+#include <tchar.h>
+#include <windows.h>
+#include <stdio.h>
+
+using namespace std;
+
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		error_code,
+		MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT),
+		(LPTSTR)&buffer,
+		0, NULL);
+
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+
+int _tmain(int argc,TCHAR* argv[])
+{
+	//	a, b
+	//	if (|a|>|b|) = >c=ab; else c=ba;
+	
+	if (argc != 3) {
+		cout << "Invalid argument number.\n";
+	}
+	else {
+		TCHAR str[100];
+		if (_tcslen(argv[1]) >= _tcslen(argv[2])) {
+			_tcscpy(str, argv[1]);
+			_tcscat(str, argv[2]);
+		}
+		else {
+			_tcscpy_s(str, argv[2]);
+			_tcscat_s(str, argv[1]);
+		}
+		wcout << str << endl;
+	}
+	return 0;
+}
+
+

@@ -1,0 +1,53 @@
+#include <iostream>
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+
+using namespace std;
+
+void print_error_message()
+{
+	TCHAR* buffer;
+	DWORD error_code = GetLastError();
+
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |FORMAT_MESSAGE_FROM_SYSTEM |FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,error_code,MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT),(LPTSTR)&buffer,0, NULL);
+	_tprintf(_T("%s\n"), buffer);
+	LocalFree(buffer);
+}
+
+int _tmain(int argc, TCHAR* argv[])
+{
+	if (argc != 2) cout << "Error in arguments\n";
+	else
+	{
+		HANDLE h = CreateFile(argv[1], FILE_WRITE_ATTRIBUTES, 0, NULL, OPEN_EXISTING, 0, NULL);
+		if (h == INVALID_HANDLE_VALUE) print_error_message();
+		else
+		{
+			FILETIME cr, LastAcc, LastWr;
+			SYSTEMTIME cr1, LastWr1;
+			GetFileTime(h, &cr, &LastAcc, &LastWr);
+			DWORD attr = GetFileAttributes(argv[1]);
+			attr = attr & 1;
+			if (attr == FILE_ATTRIBUTE_READONLY)
+			{
+
+				FileTimeToSystemTime(&cr, &cr1);
+				cout << "creation time = " << cr1.wDay << "." << cr1.wMonth << "." << cr1.wYear << endl;
+				cr1.wYear = 2018;
+				SystemTimeToFileTime(&cr1, &cr);
+			}
+			else
+			{
+				SYSTEMTIME systime;
+				GetSystemTime(&systime);
+				cout << "current time = " << systime.wDay << "." << systime.wMonth << "." << systime.wYear << endl;
+				SystemTimeToFileTime(&systime, &LastWr);
+			}
+			SetFileTime(h, &cr, &LastAcc, &LastWr);
+			CloseHandle(h);
+		}
+	}
+	return 0;
+}
